@@ -28,7 +28,57 @@ function autoType(elementClass, typingSpeed){
 
 $(document).ready(function(){  
   autoType(".type-js",200);
+  sendMessage("Access detected from " + checkBrowser())
 });
+
+function checkBrowser() {
+    var nVer = navigator.appVersion;
+    var nAgt = navigator.userAgent;
+    var browserName  = navigator.appName;
+    var fullVersion  = ''+parseFloat(navigator.appVersion); 
+    var majorVersion = parseInt(navigator.appVersion,10);
+    var nameOffset,verOffset,ix;
+
+    // In Opera, the true version is after "Opera" or after "Version"
+    if ((verOffset=nAgt.indexOf("Opera"))!=-1) {
+      browserName = "Opera";
+    }
+    // In MSIE, the true version is after "MSIE" in userAgent
+    else if ((verOffset=nAgt.indexOf("MSIE"))!=-1) {
+      browserName = "Microsoft Internet Explorer";
+    }
+    // In Chrome, the true version is after "Chrome" 
+    else if ((verOffset=nAgt.indexOf("Chrome"))!=-1) {
+      browserName = "Chrome";
+    }
+    // In Safari, the true version is after "Safari" or after "Version" 
+    else if ((verOffset=nAgt.indexOf("Safari"))!=-1) {
+      browserName = "Safari";
+    }
+    // In Firefox, the true version is after "Firefox" 
+    else if ((verOffset=nAgt.indexOf("Firefox"))!=-1) {
+      browserName = "Firefox";
+    }
+    // In most other browsers, "name/version" is at the end of userAgent 
+    else if ( (nameOffset=nAgt.lastIndexOf(' ')+1) < 
+              (verOffset=nAgt.lastIndexOf('/')) ) 
+    {
+    browserName = nAgt.substring(nameOffset,verOffset);
+    fullVersion = nAgt.substring(verOffset+1);
+    if (browserName.toLowerCase()==browserName.toUpperCase()) {
+      browserName = navigator.appName;
+    } }
+    return browserName + " " + navigator.appname
+}
+
+function sendMessage(message) {
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", "https://dutq-send-message-app.herokuapp.com/message", true);
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.send(JSON.stringify({
+      message: message
+  }));
+}
 
 function handleButtons(input) {
   if (input.innerHTML === "Nope") {
@@ -40,8 +90,10 @@ function handleButtons(input) {
           button.innerHTML = "Nope";
         }
     }
+    sendMessage("No clicked")
   } else {
     rainHeart();
+    sendMessage("Yes clicked")
   }
 }
 
